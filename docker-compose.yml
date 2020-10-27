@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: 'mongo:latest'
+    container_name: 'mongo'
+    build: './src/db'
+    ports:
+      - '27100:27017'
+    volumes:
+      - echo_sports_data:/data/db
+  api:
+    image: golang:alpine
+    container_name: 'echo_sports'
+    build: .
+    ports:
+      - '8080:8080'
+    volumes:
+      - './api:/src/app'
+    depends_on:
+      - 'mongo'
+
+volumes:
+   echo_sport_data:
+
+networks:
+   echonet:
