@@ -2,19 +2,15 @@ package controllers
 
 import (
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	_ "github.com/swaggo/echo-swagger"
+	_ "github.com/swaggo/swag"
 )
 
 func InitScores() {
 
 }
 
-// Controllers
-// func GetTeamScore(c echo.Context) error {
-// 	scores := new(models.Score)
-// 	var err error
-// 	fmt.Println(err)
-// 	return c.JSON(http.StatusCreated, scores)
-// }
 
 func (s *Score) GetScores(c echo.Context) {
 
@@ -44,11 +40,17 @@ func ScoresRoutes() {
 	// New Echo instance
 	e := echo.New()
 
-	e.GET("/sportsapi/v1/scores/:sport", GetScores)
-	e.GET("/sportsapi/v1/scores/:sport/:team", GetScore)
-	e.PUT("/sportsapi/v1/scores/:sport/:team", UpdateScore)
-	e.PATCH("/sportsapi/v1/scores/:sport/:team", PatchScore)
-	e.POST("/sportsapi/v1/scores", PostScore)
-	e.DELETE("/sportsapi/v1/scores/:sport/:team", DeleteScore)
+	scores := e.Group("/echosportsapi/v1/scores")
+
+	scores.Use(middleware.LoggerWithConfig(middleware.LoggerConfig {
+		format: `[$(time_rfc3339)] $(method) $(uri) $(status)` + "\n"
+	}))
+
+	scores.GET("/:sport", GetScores)
+	scores.GET("/:sport/:team", GetScore)
+	scores.PUT("/:sport/:team", UpdateScore)
+	scores.PATCH("/:sport/:team", PatchScore)
+	scores.POST("/", PostScore)
+	scores.DELETE("/:sport/:team", DeleteScore)
 
 }

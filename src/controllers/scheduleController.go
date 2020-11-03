@@ -15,10 +15,7 @@ func InitSchedule() {
 
 // Controllers
 func GetSchedule(c echo.Context) error {
-	team := new(models.Team)
-	var err error
-	fmt.Println(err)
-	return c.JSON(http.StatusCreated, team)
+	
 }
 
 func (sch *Schedule) GetSchedule(c echo.Context) {
@@ -45,9 +42,15 @@ func ScheduleRoutes() {
 	// New Echo instance
 	e := echo.New()
 
-	e.GET("/sportsapi/v1/schedule/:sport", GetSchedule)
-	e.GET("/sportsapi/v1/schedule/:sport/:team", GetTeamSchedule)
-	e.PUT("/sportsapi/v1/schedule/:sport/:team", UpdateTeamSchedule)
-	e.POST("/sportsapi/v1/schedule", CreateTeamSchedule)
-	e.DELETE("/sportsapi/v1/schedule/:sport/:team", DeleteTeamSchedule)
+	schedule := e.Group("/echosportsapi/v1/schedule")
+
+	schedule.Use(middleware.LoggerWithConfig(middleware.LoggerConfig {
+		format: `[$(time_rfc3339)] $(method) $(uri) $(status)` + "\n"
+	}))
+
+	schedule.GET("/:sport", GetSchedule)
+	schedule.GET("/:sport/:team", GetTeamSchedule)
+	schedule.PUT("/:sport/:team", UpdateTeamSchedule)
+	schedule.POST("/", CreateTeamSchedule)
+	schedule.DELETE("/:sport/:team", DeleteTeamSchedule)
 }

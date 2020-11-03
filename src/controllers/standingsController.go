@@ -11,10 +11,7 @@ import (
 
 // Controllers
 func InitStandings(c echo.Context) error {
-	standings := new(models.Standings)
-	var err error
-	fmt.Println(err)
-	return c.JSON(http.StatusCreated, team)
+	
 }
 
 func (st *Standings) GetStandings(c echo.Context) {
@@ -45,10 +42,16 @@ func StandingsRoutes() {
 	// New Echo instance
 	e := echo.New()
 
-	e.GET("/sportsapi/v1/standings/:sport", GetStandings)
-	e.GET("/sportsapi/v1/standings/:sport/:team", GetStanding)
-	e.PUT("/sportsapi/v1/standings/:sport/:team", UpdateTeamStandings)
-	e.POST("/sportsapi/v1/standings/", CreateTeamStandings)
-	e.DELETE("/sportsapi/v1/standings/:sport/:team", DeleteTeamStandings)
+	standings := e.Group("/echosportsapi/v1/standings")
+
+	standings.Use(middleware.LoggerWithConfig(middleware.LoggerConfig {
+		format: `[$(time_rfc3339)] $(method) $(uri) $(status)` + "\n"
+	}))
+
+	standings.GET("/:sport", GetStandings)
+	standings.GET("/:sport/:team", GetStanding)
+	standings.PUT("/:sport/:team", UpdateTeamStandings)
+	standings.POST("/", CreateTeamStandings)
+	standings.DELETE("/:sport/:team", DeleteTeamStandings)
 
 }
